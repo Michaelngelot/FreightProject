@@ -1,3 +1,5 @@
+import 'package:final_project/AllScreens/SignupScreen.dart';
+import 'package:final_project/AllScreens/loginScreen.dart';
 import 'package:final_project/AllScreens/mainscreen.dart';
 import 'package:flutter/material.dart';
 
@@ -10,14 +12,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Cargo Freight',
       theme: ThemeData(
-
-        primarySwatch: Colors.red,
+      fontFamily: "Signatra",
+        primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MainScreen(),
-      debugShowCheckedModeBanner:false,
+      //Routing pages
+      initialRoute: loginScreen.idScreen,
+      routes: {
+       SignupScreen.idScreen: (context) => SignupScreen(),
+      loginScreen.idScreen: (context) => loginScreen(),
+        MainScreen.idScreen: (context) =>MainScreen(),
+
+      },
+      debugShowCheckedModeBanner: false,
     );
   }
 }
