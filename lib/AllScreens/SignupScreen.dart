@@ -1,10 +1,21 @@
 import 'package:final_project/AllScreens/loginScreen.dart';
+import 'package:final_project/AllScreens/mainscreen.dart';
+import 'package:final_project/main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+
 
 class SignupScreen extends StatelessWidget {
 
   //Routing variable
   static const String idScreen = "Signup";
+
+  //Text field controllers to hold user data
+  TextEditingController nameTextEditingController = TextEditingController();
+  TextEditingController emailTextEditingController = TextEditingController();
+  TextEditingController passwordTextEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context)  {
@@ -16,7 +27,7 @@ class SignupScreen extends StatelessWidget {
             padding: EdgeInsets.all(8.0),
             child: Column(
                 children: [
-                  SizedBox(height: 60.0,),
+                  SizedBox(height:  60.0,),
                   Image(
                     image: AssetImage("images/logo.png"),   //image
                     width: 200.0,
@@ -35,10 +46,12 @@ class SignupScreen extends StatelessWidget {
                       padding: EdgeInsets.all(20.0),
                       child: Column(
                         children: [
-                          //Email text field
+                          //Name text field
                           SizedBox(height: 1.0,),
                           TextField(
-                              keyboardType: TextInputType.emailAddress,
+                            //Name controller
+                            controller: nameTextEditingController,
+                              keyboardType: TextInputType.text,
                               decoration: InputDecoration(
                                   labelText: "Name",
                                   labelStyle: TextStyle(
@@ -52,10 +65,12 @@ class SignupScreen extends StatelessWidget {
                               style: TextStyle(fontSize: 18.0)
                           ),
 
-                          //Password text field
+                          //email text field
                           SizedBox(height: 1.0,),
                           TextField(
-                              keyboardType: TextInputType.text,
+                            //Email controller
+                              controller: emailTextEditingController,
+                              keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
                                   labelText: "Email",
                                   labelStyle: TextStyle(
@@ -72,6 +87,8 @@ class SignupScreen extends StatelessWidget {
                           //Password text field
                           SizedBox(height: 1.0,),
                           TextField(
+                            //Password controller
+                              controller: passwordTextEditingController,
                               obscureText: true,
                               decoration: InputDecoration(
                                   labelText: "Password",
@@ -87,10 +104,10 @@ class SignupScreen extends StatelessWidget {
                           ),
 
 
-                          //Button login
+                          //Button Signup
                           SizedBox(height: 30.0,),
                           RaisedButton(
-                              color: Colors.grey,
+                              color: Colors.blue,
                               textColor: Colors.white,
                               child: Container(
                                 height: 50.0,
@@ -109,8 +126,23 @@ class SignupScreen extends StatelessWidget {
 
                               //signup button
                               onPressed:()
-                              { //to be routed later
-                                print("SignUp Successfull");
+                              {
+                                //condition to check user registration
+                                if(nameTextEditingController.text.length < 5)
+                                  {
+                                    displayToastMessage("name must be at least five characters", context);
+                                  }
+                                else if(!emailTextEditingController.text.contains("@"))
+                                {
+                                  displayToastMessage("invalid email", context);
+                                }
+                                else if(passwordTextEditingController.text.length < 6)
+                                {
+                                  displayToastMessage("password not less then 6 characters", context);
+                                }
+                                else {
+                                  registerNewUser(context);
+                                }
                               }
                           )
                         ],
@@ -131,4 +163,44 @@ class SignupScreen extends StatelessWidget {
         )
     );
   }
+
+  //Implementing/calling firebase authenticator
+ final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  //function to create new user
+ void registerNewUser(BuildContext context)async
+ {
+ final User? firebaseUser = (await _firebaseAuth.createUserWithEmailAndPassword(
+     email: emailTextEditingController.text,
+     password: passwordTextEditingController.text).catchError((erMsg){
+       displayToastMessage("Error:" + erMsg.toString(), context);
+       
+ })).user;
+
+
+if(firebaseUser!=null) //user created
+    {
+  //save user info to database
+  Map userDataMap = {
+    "name": nameTextEditingController.text.trim(),
+    "email": emailTextEditingController.text.trim(),
+  };
+
+  usersRef.child(firebaseUser.uid).set(userDataMap);
+  displayToastMessage("Account created", context);
+
+  //Route to mainScreen
+  Navigator.pushNamedAndRemoveUntil(context, MainScreen.idScreen, (route) => false);
+}
+  
+else{
+  //error occurred-display error
+  displayToastMessage("User not created", context);
+}
+ }
+
+}
+
+//Display toast/error message function
+displayToastMessage(String message, BuildContext context ){
+  Fluttertoast.showToast(msg: message);
 }

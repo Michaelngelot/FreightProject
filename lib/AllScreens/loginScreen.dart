@@ -1,10 +1,19 @@
 import 'package:final_project/AllScreens/SignupScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+
+import '../main.dart';
+import 'mainscreen.dart';
 
 class loginScreen extends StatelessWidget {
 
 //Routing Variable
   static const String idScreen = "login";
+
+  TextEditingController emailTextEditingController = TextEditingController();
+  TextEditingController passwordTextEditingController = TextEditingController();
+
   @override
   Widget build(BuildContext context)  {
       return Scaffold(
@@ -36,6 +45,7 @@ class loginScreen extends StatelessWidget {
                     //Email text field
                     SizedBox(height: 1.0,),
                     TextField(
+                      controller: emailTextEditingController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                             labelText: "Email",
@@ -53,6 +63,7 @@ class loginScreen extends StatelessWidget {
                     //Password text field
                     SizedBox(height: 1.0,),
                     TextField(
+                      controller: passwordTextEditingController ,
                         obscureText: true,
                         decoration: InputDecoration(
                             labelText: "Password",
@@ -70,7 +81,7 @@ class loginScreen extends StatelessWidget {
                     //Button login
                     SizedBox(height: 30.0,),
                     RaisedButton(
-                      color: Colors.yellow,
+                      color: Colors.blue,
                       textColor: Colors.white,
                       child: Container(
                         height: 50.0,
@@ -89,13 +100,28 @@ class loginScreen extends StatelessWidget {
 
                         onPressed:()
                     {
-                    print("Logged in Successfull");
+                      if(!emailTextEditingController.text.contains("@"))
+                      {
+                        displayToastMessage("Invalid email", context);
+                      }
+                      else if(emailTextEditingController.text.isEmpty)
+                      {
+                        displayToastMessage("Email Required", context);
+                      }
+                      else if(passwordTextEditingController.text.isEmpty)
+                      {
+                        displayToastMessage("Password Required", context);
+                      }
+                      else {
+                        loginAndAuthenticateUser(context);
+                      }
+
                     }
                     )
                     ],
                 )
                 ),
-              FlatButton(
+              TextButton(
                 onPressed: () {
                   Navigator.pushNamedAndRemoveUntil(
                       context, SignupScreen.idScreen, (route) => false);
@@ -110,4 +136,34 @@ class loginScreen extends StatelessWidget {
         )
       );
   }
+
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+ void loginAndAuthenticateUser(BuildContext context) async
+ {
+   final User? firebaseUser = (await _firebaseAuth
+       .signInWithEmailAndPassword(
+       email: emailTextEditingController.text,
+       password: passwordTextEditingController.text).catchError((erMsg){
+     displayToastMessage("Error: " + erMsg..toString(), context);
+
+   })).user;
+
+   if(firebaseUser!=null) //user created
+       {
+         //check if user is already registered
+         usersRef.child(firebaseUser.uid).once().then((DataSnapshot snap){
+    if(snap.value!=null)
+    {
+      //Route to mainScreen
+      Navigator.pushNamedAndRemoveUntil(context, MainScreen.idScreen, (route) => false);
+      displayToastMessage("Signed In", context);
+    }
+});
+    }
+   else{
+     _firebaseAuth.signOut();
+     displayToastMessage("Account not found. Proceed to sign up.", context);
+   }
+
+ }
 }
