@@ -70,7 +70,7 @@ class loginScreen extends StatelessWidget {
                     //Button login
                     SizedBox(height: 30.0,),
                     RaisedButton(
-                      color: Colors.yellow,
+                      color: Colors.blue,
                       textColor: Colors.white,
                       child: Container(
                         height: 50.0,

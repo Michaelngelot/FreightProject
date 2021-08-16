@@ -3,6 +3,7 @@ import 'package:final_project/AllScreens/loginScreen.dart';
 import 'package:final_project/AllScreens/mainscreen.dart';
 import 'package:flutter/material.dart';
 
+
 void main() {
   runApp(MyApp());
 }
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Cargo Freight',
       theme: ThemeData(
-      fontFamily: "Signatra",
+      fontFamily: "Arial",
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),

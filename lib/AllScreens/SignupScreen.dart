@@ -1,10 +1,17 @@
 import 'package:final_project/AllScreens/loginScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 
 class SignupScreen extends StatelessWidget {
 
   //Routing variable
   static const String idScreen = "Signup";
+
+  //Text field controllers to hold user data
+  TextEditingController nameTextEditingController = TextEditingController();
+  TextEditingController emailTextEditingController = TextEditingController();
+  TextEditingController passwordTextEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context)  {
@@ -35,9 +42,11 @@ class SignupScreen extends StatelessWidget {
                       padding: EdgeInsets.all(20.0),
                       child: Column(
                         children: [
-                          //Email text field
+                          //Name text field
                           SizedBox(height: 1.0,),
                           TextField(
+                            //Name controller
+                            controller: nameTextEditingController,
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
                                   labelText: "Name",
@@ -55,6 +64,8 @@ class SignupScreen extends StatelessWidget {
                           //Password text field
                           SizedBox(height: 1.0,),
                           TextField(
+                            //Email controller
+                              controller: emailTextEditingController,
                               keyboardType: TextInputType.text,
                               decoration: InputDecoration(
                                   labelText: "Email",
@@ -72,6 +83,8 @@ class SignupScreen extends StatelessWidget {
                           //Password text field
                           SizedBox(height: 1.0,),
                           TextField(
+                            //Password controller
+                              controller: passwordTextEditingController,
                               obscureText: true,
                               decoration: InputDecoration(
                                   labelText: "Password",
@@ -90,7 +103,7 @@ class SignupScreen extends StatelessWidget {
                           //Button login
                           SizedBox(height: 30.0,),
                           RaisedButton(
-                              color: Colors.grey,
+                              color: Colors.blue,
                               textColor: Colors.white,
                               child: Container(
                                 height: 50.0,
@@ -110,7 +123,7 @@ class SignupScreen extends StatelessWidget {
                               //signup button
                               onPressed:()
                               { //to be routed later
-                                print("SignUp Successfull");
+
                               }
                           )
                         ],
@@ -131,4 +144,6 @@ class SignupScreen extends StatelessWidget {
         )
     );
   }
+
+
 }

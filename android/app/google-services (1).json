@@ -1,15 +1,16 @@
 {
   "project_info": {
     "project_number": "213952031200",
+    "firebase_url": "https://freight-app-2f442-default-rtdb.firebaseio.com",
     "project_id": "freight-app-2f442",
     "storage_bucket": "freight-app-2f442.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:213952031200:android:9f99d7938b833f76a52385",
+        "mobilesdk_app_id": "1:213952031200:android:45338fa81b0fbb77a52385",
         "android_client_info": {
-          "package_name": "com.example.final_project"
+          "package_name": "com.example.finalproject"
         }
       },
       "oauth_client": [
