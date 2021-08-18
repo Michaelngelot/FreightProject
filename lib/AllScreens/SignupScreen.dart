@@ -1,5 +1,6 @@
 import 'package:final_project/AllScreens/loginScreen.dart';
 import 'package:final_project/AllScreens/mainscreen.dart';
+import 'package:final_project/AllWidgets/progressDialog.dart';
 import 'package:final_project/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -169,9 +170,18 @@ class SignupScreen extends StatelessWidget {
   //function to create new user
  void registerNewUser(BuildContext context)async
  {
+   showDialog(
+       context: context,
+       barrierDismissible: false,
+       builder: (BuildContext context)
+       {
+         return ProgressDialog(message:  "Please wait...",);
+       }
+   );
  final User? firebaseUser = (await _firebaseAuth.createUserWithEmailAndPassword(
      email: emailTextEditingController.text,
      password: passwordTextEditingController.text).catchError((erMsg){
+   Navigator.pop(context);
        displayToastMessage("Error:" + erMsg.toString(), context);
        
  })).user;
