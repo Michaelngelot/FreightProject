@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:final_project/AllWidgets/Divider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -49,7 +50,7 @@ class _MainScreenState extends State<MainScreen>{
               right: 0.0,
               bottom: 0.0,
               child: Container(
-                height: 320.0,
+                height: 300.0,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(18.0), topRight: Radius.circular(18.0)
@@ -59,7 +60,7 @@ class _MainScreenState extends State<MainScreen>{
                       color: Colors.black,
                       blurRadius: 16.0,
                       spreadRadius: 0.5,
-                      offset: offset(0.7,0.7),
+                      offset: Offset(0.7,0.7),
                     ),
                   ],
               ),
@@ -81,44 +82,67 @@ class _MainScreenState extends State<MainScreen>{
                                 color: Colors.black54,
                                 blurRadius: 6.0,
                                 spreadRadius: 0.5,
-                                offset: offset(0.7,0.7),
+                                offset: Offset (0.7,0.7),
                               ),
                             ],
                           ),
 
-                          child: Row(
-                            children: [
-                              Icon(Icons.search, color: Colors.yellowAccent),
-                              SizedBox(width: 10.0,),
-                              Text("Search Drop off")
-                            ],
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Row(
+                              children: [
+                                Icon(Icons.search, color: Colors.blueAccent),
+                                SizedBox(width: 10.0,),
+                                Text("Search Drop off")
+                              ],
+                            ),
                           ),
                         ),
 
                         SizedBox(height:  24.0),
                         Row(
                           children: [
-                          Icon(Icons.home, color: Colors.grey,),
+                          Icon(Icons.home, color: Colors.black54,),
                             SizedBox(width: 12.0,),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("Add hom"
-                                ,
+                                Text("Add home"),
+                                SizedBox(height: 4.0,),
+                                Text("Your home address", style: TextStyle(color: Colors.black54, fontSize: 12.0,),
                             )
 
 
                           ],
-                        )
-
-
-
+                            )
         ]
-    ),
-                 )
+    ),              SizedBox(height:  10.0),
+                    DividerWidget(),
+
+                   SizedBox(height:  16.0),
+
+                   Row(
+                       children: [
+                         Icon(Icons.work, color: Colors.grey,),
+                         SizedBox(width: 12.0,),
+                         Column(
+                           crossAxisAlignment: CrossAxisAlignment.start,
+                           children: [
+                             Text("Add work"),
+                             SizedBox(height: 4.0,),
+                             Text("Your office address", style: TextStyle(color: Colors.black54, fontSize: 12.0,),
+                             )
+                           ],
+                         ),
+                       ],
+                   ),
+                 ])
+            ),
+            ),
             )
-            )],
+          ],
       ),
     );
   }
+
 }
