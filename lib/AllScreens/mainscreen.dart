@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:final_project/AllWidgets/Divider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -19,7 +20,9 @@ class _MainScreenState extends State<MainScreen>{
   //New googleMap location
   late GoogleMapController newGoogleMapController;
 
-  //Setting initial cameraPosition
+  //Drawer key
+  GlobalKey<ScaffoldState> scaffoldkey = new GlobalKey<ScaffoldState>()
+;  //Setting initial cameraPosition
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
@@ -28,9 +31,61 @@ class _MainScreenState extends State<MainScreen>{
   @override
   Widget build(BuildContext context){
     return Scaffold(
+      key: scaffoldkey,
       appBar: AppBar(
         title: Text("Cargo Freight"),
       ),
+
+      //Side Drawer
+      drawer: Container(
+        color: Colors.white,
+        width: 300.0,
+        child: Drawer(
+          child: ListView(
+            children: [
+              //Drawer header
+              Container(
+                height: 165.0,
+                child: DrawerHeader(
+                  decoration: BoxDecoration(color: Colors.white),
+                  child: Row(
+                    children: [
+                      Image.asset("images/user_icon.png", height: 65.0, width: 65.0,),
+                      SizedBox(width: 16.0,),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Profile Name", style:  TextStyle(fontSize: 16.0),),
+                          SizedBox(height: 6.0,),
+                          Text("View Profile"),
+
+
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              DividerWidget(),
+              SizedBox(height: 12.0,),
+              //Drawer Body
+              ListTile(
+                leading: Icon(Icons.history),
+                title: Text("History", style: TextStyle(fontSize: 15.0),),
+              ),
+              ListTile(
+                leading: Icon(Icons.person),
+                title: Text("View Profile", style: TextStyle(fontSize: 15.0),),
+              ),
+              ListTile(
+                leading: Icon(Icons.info),
+                title: Text("About", style: TextStyle(fontSize: 15.0),),
+              ),
+
+            ],
+          ),
+        ),
+      )  ,
       body: Stack(
           children: [
                GoogleMap(
@@ -42,6 +97,42 @@ class _MainScreenState extends State<MainScreen>{
                       newGoogleMapController = controller;
               },
                ),
+
+            //Hamburger Button
+            Positioned(
+              top: 45.0,
+              left: 22.0,
+              child: GestureDetector(
+                onTap: (){
+                  //openDrawer
+                      scaffoldkey.currentState!.openDrawer();
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                  color:Colors.white,
+                  borderRadius: BorderRadius.circular(22.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color:  Colors.black,
+                      blurRadius: 6.0,
+                    spreadRadius: 0.5,
+                      offset: Offset(
+                        0.7,.07
+                      ),
+
+                    ),
+                      ],
+                  ),
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: Icon(Icons.menu, color: Colors.black,),
+                    ),
+
+
+                ),
+              ),
+              ),
+
 
             //Adding Home/Work
         //Creating Box
