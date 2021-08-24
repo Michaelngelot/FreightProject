@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:final_project/AllWidgets/Divider.dart';
+import 'package:final_project/Assistants/AssistantMethods.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MainScreen extends StatefulWidget{
@@ -21,10 +23,36 @@ class _MainScreenState extends State<MainScreen>{
   late GoogleMapController newGoogleMapController;
 
   //Drawer key
-  GlobalKey<ScaffoldState> scaffoldkey = new GlobalKey<ScaffoldState>()
-;  //Setting initial cameraPosition
+  GlobalKey<ScaffoldState> scaffoldkey = new GlobalKey<ScaffoldState>();
+
+  //Variable to get users current location
+  //to get the latitude and longitude
+  late Position currentPosition;
+   var geoLocator =Geolocator();
+
+  double bottomPaddingOfMap = 0;
+   //Locate user current position
+   void locatePosition() async
+   {
+
+     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+     currentPosition = position;
+
+     //Instance of longitude and latitude
+     LatLng latLatPosition = LatLng(position.latitude, position.longitude);
+
+     CameraPosition cameraPosition = new CameraPosition(target: latLatPosition, zoom: 15);
+     newGoogleMapController.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+
+
+     String address = await AssistantMethods.searchCoordinateAddress(position);
+     print("Your are here" + address);
+   }
+
+
+ //Setting initial cameraPosition
   static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+    target: LatLng(5.593203, -0.233875),
     zoom: 14.4746,
   );
 
@@ -89,12 +117,24 @@ class _MainScreenState extends State<MainScreen>{
       body: Stack(
           children: [
                GoogleMap(
-    mapType: MapType.normal,
-    myLocationButtonEnabled: true,
+                 padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
+                 mapType: MapType.normal,
+                 myLocationButtonEnabled: true,
                  initialCameraPosition: _kGooglePlex,
-                 onMapCreated: (GoogleMapController controller){
+                 myLocationEnabled: true,
+                 zoomGesturesEnabled: true,
+                 zoomControlsEnabled: true,
+                 //When map is created
+                 onMapCreated: (GoogleMapController controller)
+                 {
+                   setState(() {
+                     bottomPaddingOfMap = 300.0;
+                   });
+                   // map is set correctly
                       _controllerGoogleMap.complete(controller);
                       newGoogleMapController = controller;
+                    //Location position is called
+                      locatePosition();
               },
                ),
 
@@ -107,6 +147,7 @@ class _MainScreenState extends State<MainScreen>{
                   //openDrawer
                       scaffoldkey.currentState!.openDrawer();
                 },
+                //Drawer
                 child: Container(
                   decoration: BoxDecoration(
                   color:Colors.white,
@@ -123,15 +164,11 @@ class _MainScreenState extends State<MainScreen>{
                     ),
                       ],
                   ),
-                    child: CircleAvatar(
-                      backgroundColor: Colors.white,
-                      child: Icon(Icons.menu, color: Colors.black,),
+
                     ),
-
-
                 ),
               ),
-              ),
+
 
 
             //Adding Home/Work
