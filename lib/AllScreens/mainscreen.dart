@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:final_project/AllWidgets/Divider.dart';
 import 'package:final_project/Assistants/AssistantMethods.dart';
+import 'package:final_project/DataHandler/appData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget{
 
@@ -45,7 +47,7 @@ class _MainScreenState extends State<MainScreen>{
      newGoogleMapController.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
 
-     String address = await AssistantMethods.searchCoordinateAddress(position);
+     String address = await AssistantMethods.searchCoordinateAddress(context,position);
      print("Your are here" + address);
    }
 
@@ -235,7 +237,14 @@ class _MainScreenState extends State<MainScreen>{
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("Add home"),
+                                Text(
+                                  //Check if pickLocation has set or not
+                                  //if not null display Add home
+
+                                  Provider.of<AppData>(context).pickUpLocation != null
+                                      ?Provider.of<AppData>(context).pickUpLocation!.placeName
+                                      :"Add home"
+                                ),
                                 SizedBox(height: 4.0,),
                                 Text("Your home address", style: TextStyle(color: Colors.black54, fontSize: 12.0,),
                             )
