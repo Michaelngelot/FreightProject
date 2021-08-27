@@ -24,9 +24,10 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       //Initialize appData class
       create: (context) => AppData(),
-      
+
       child: MaterialApp(
-        title: 'Cargo Freight',
+
+        title: 'ECargo',
         theme: ThemeData(
         fontFamily: "Arial",
           primarySwatch: Colors.blue,

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:final_project/AllScreens/SearchScreen.dart';
 import 'package:final_project/AllWidgets/Divider.dart';
 import 'package:final_project/Assistants/AssistantMethods.dart';
 import 'package:final_project/DataHandler/appData.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+
 
 class MainScreen extends StatefulWidget{
 
@@ -48,7 +50,7 @@ class _MainScreenState extends State<MainScreen>{
 
 
      String address = await AssistantMethods.searchCoordinateAddress(context,position);
-     print("Your are here" + address);
+     print("Your are here :: " + address);
    }
 
 
@@ -60,10 +62,11 @@ class _MainScreenState extends State<MainScreen>{
 
   @override
   Widget build(BuildContext context){
+
     return Scaffold(
       key: scaffoldkey,
       appBar: AppBar(
-        title: Text("Cargo Freight"),
+        title: Text("ECargo"),
       ),
 
       //Side Drawer
@@ -203,28 +206,36 @@ class _MainScreenState extends State<MainScreen>{
                       Text("Where to?", style: TextStyle( fontSize: 20.0),),
                         SizedBox(height: 20.0,),
 
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(5.0),
-                          boxShadow: [
-                              BoxShadow(
-                                color: Colors.black54,
-                                blurRadius: 6.0,
-                                spreadRadius: 0.5,
-                                offset: Offset (0.7,0.7),
-                              ),
-                            ],
-                          ),
-
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Row(
-                              children: [
-                                Icon(Icons.search, color: Colors.blueAccent),
-                                SizedBox(width: 10.0,),
-                                Text("Search Drop off")
+                        //Adding click event to search Drop off
+                        GestureDetector(
+                          onTap:()
+                          {
+                            //Navigator.pushNamedAndRemoveUntil(context, loginScreen.idScreen, (route) => false);
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=> SearchScreen()));
+                            },
+                             child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(5.0),
+                            boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black54,
+                                  blurRadius: 6.0,
+                                  spreadRadius: 0.5,
+                                  offset: Offset (0.7,0.7),
+                                ),
                               ],
+                            ),
+
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.search, color: Colors.blueAccent),
+                                  SizedBox(width: 10.0,),
+                                  Text("Search Drop off")
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -241,8 +252,8 @@ class _MainScreenState extends State<MainScreen>{
                                   //Check if pickLocation has set or not
                                   //if not null display Add home
 
-                                  Provider.of<AppData>(context).pickUpLocation != null
-                                      ?Provider.of<AppData>(context).pickUpLocation!.placeName
+                                Provider.of<AppData>(context).pickUpLocation!= null
+                                     ?Provider.of<AppData>(context).pickUpLocation!.placeName
                                       :"Add home"
                                 ),
                                 SizedBox(height: 4.0,),
