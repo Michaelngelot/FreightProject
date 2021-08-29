@@ -1,4 +1,9 @@
+import 'package:final_project/AllWidgets/Divider.dart';
+import 'package:final_project/Assistants/requestAssistant.dart';
 import 'package:final_project/DataHandler/appData.dart';
+import 'package:final_project/Models/placePrediction.dart';
+import 'package:final_project/configMaps.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,19 +20,23 @@ class _SearchScreenState extends State<SearchScreen>
 
   TextEditingController pickUpTextEditingController = TextEditingController();
   TextEditingController dropOffTextEditingController = TextEditingController();
+  List<PlacePrediction> placePredictionList = [];
+
+
 
   @override
   Widget build(BuildContext context)
   {
     //Retrieve address
-   //you giving me trouble, i'll be back
-
-    String placeAddress= context.read<AppData>().pickUpLocation!.placeName;
+   //you're giving me trouble, i'll be back
+       String placeAddress=context.read<AppData>().pickUpLocation!.placeName;
      pickUpTextEditingController.text = placeAddress;
+
     return Scaffold(
         body: Column(
           children: [
             Container(
+
                 height: 215.0,
                 decoration: BoxDecoration(
                     color: Colors.white,
@@ -119,6 +128,11 @@ class _SearchScreenState extends State<SearchScreen>
                                 child: Padding(
                                   padding: EdgeInsets.all(3.0) ,
                                   child: TextField(
+                                    //Call function findPlace anytime user type something
+                                    onChanged: (val)
+                                    {
+                                      findPlace(val);
+                                    },
                                     controller: dropOffTextEditingController,
                                     decoration: InputDecoration(
                                         hintText: "Where to",
@@ -138,9 +152,98 @@ class _SearchScreenState extends State<SearchScreen>
                         ),
                       ]),
                 )
-            )],
-        )
+            ),
+            
+            
+            //title for displaying predictions
+            (placePredictionList.length >0)
+            ? Padding(
+                padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 16.0),
+                child: ListView.separated(
+                  padding: EdgeInsets.all(0.0),
+                    itemBuilder:(context,index){
+                      return PredictionTile(placePrediction: placePredictionList[index]);
+                  },
+        separatorBuilder: (BuildContext context, int index) => DividerWidget(),
+itemCount: placePredictionList.length,
+    shrinkWrap: true,
+    physics: ClampingScrollPhysics(),
+
+              ),
+    )
+
+    :Container()
+
+  ]
+     )
+    );
+  }
+
+
+
+//Method to find place with the help of google places Api
+void findPlace( String placeName) async
+{
+if(placeName.length > 1)
+{
+  //setting google autocomplete api url
+  //Search can be made country specific or International
+  //$component=country:GH makes place search specific to ghana
+ String autoCompleteUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&key=$mapKey&sessiontoken=1234567890&components=country:GH";
+
+ var res = await RequestAssistant.getRequest(autoCompleteUrl);
+ if (res == "failed"){
+   return;
+ }
+//Check from JSON file for list of prediction
+if(res["status"] =="OK"){
+
+  var predictions = res["predictions"];
+
+  var placeList = (predictions as List).map((e) => PlacePrediction.fromJson(e)).toList();
+
+  setState(() {
+    placePredictionList =placeList;
+  });
+}
+}
+}
+
+}
+
+//Prediction Tile
+class PredictionTile extends StatelessWidget {
+  late final PlacePrediction placePrediction;
+
+  PredictionTile({Key? key, required this.placePrediction})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: [
+          SizedBox(width: 10.0,),
+         Row(
+            children: [
+              Icon(Icons.add_location),
+              SizedBox(width: 14.0,),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(placePrediction.main_text, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16.0),),
+                    SizedBox(height: 3.0,),
+                    Text(placePrediction.secondary_text, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.0, color: Colors.grey),),
+
+                  ],
+                ),
+              )
+            ],
+          ),
+          SizedBox(width:10.0),
+        ],
+      ),
     );
   }
 }
-
