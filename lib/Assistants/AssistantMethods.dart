@@ -2,9 +2,14 @@
 import 'package:final_project/Assistants/requestAssistant.dart';
 import 'package:final_project/DataHandler/appData.dart';
 import 'package:final_project/Models/address.dart';
+import 'package:final_project/Models/directionDetails.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+
+import '../configMaps.dart';
 
 
 class AssistantMethods {
@@ -14,25 +19,23 @@ class AssistantMethods {
   {
 
     String placeAddress = "";
-    String st1,st2,st3,st4;
+    //String st1,st2,st3,st4;
 
-    String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="
-        "${position.latitude},"
-        "${position.longitude}&key=AIzaSyCz5b_Z9M9Mhf-GwCN3M783WFl9xMGR9kw";
+    String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$mapKey";
 
     //Calling from request Assistant class
-    var response = await RequestAssistant.getRequest(url);
+    var res = await RequestAssistant.getRequest(Uri.encodeFull(url));
 
-    if(response !="failed")
+    if(res !="failed")
       {
         //From the decoded jSon Data we get the formatted address
 
-        placeAddress= response["results"][0]["formatted_address"];
+        placeAddress= res["results"][0]["formatted_address"];
         //Display specific location details from https://developers.google.com/maps/documentation/geocoding/start
-        //st1 =  response["results"][0]["address_components"][3]["long_name"];
-        //st2 =  response["results"][0]["address_components"][4]["long_name"];
-       // st3 =  response["results"][0]["address_components"][5]["long_name"];
-       // st4 =  response["results"][0]["address_components"][6]["long_name"];
+        //st1 =  res["results"][0]["address_components"][3]["long_name"];
+        //st2 =  res["results"][0]["address_components"][4]["long_name"];
+       // st3 =  res["results"][0]["address_components"][5]["long_name"];
+       // st4 =  res["results"][0]["address_components"][6]["long_name"];
         //placeAddress = st1 + ", " + st2 + ", " + st3 + ", " + st4;
 
         //Get user address details from address class
@@ -45,4 +48,36 @@ class AssistantMethods {
       }
   return placeAddress;
   }
-}
+
+  //Get direction details
+
+    static Future<DirectionDetails?>obtainPlaceDirectionDetails (LatLng initialPosition, LatLng finalPosition) async
+  {
+      String directionalUrl = "https://maps.googleapis.com/maps/api/directions/json?origin=${initialPosition.latitude},${initialPosition.longitude}&destination=${finalPosition.latitude},${finalPosition.longitude}&key=$mapKey";
+
+    //String directionalUrl= "https://maps.googleapis.com/maps/api/directions/json?origin=49.794150%2C-84.564514&destination=49.173205%2C-84.756775&key=AIzaSyCz5b_Z9M9Mhf-GwCN3M783WFl9xMGR9kw";
+      //Calling from request Assistant class
+      var res = await RequestAssistant.getRequest(Uri.encodeFull(directionalUrl));
+
+      if(res == "failed")
+      {
+        return null;
+      }
+     // return placeAddress;
+
+     DirectionDetails directionDetails = DirectionDetails(distanceValue: 0, durationValue: 0, distanceText: '', durationText: '', encodedPoints: 'code');
+
+      directionDetails.encodedPoints = res["routes"][0]["overview_polyline"]["points"];
+      directionDetails.distanceText = res["routes"][0]["legs"][0]["distance"]["text"];
+      directionDetails.distanceValue =res["routes"][0]["legs"][0]["distance"]["value"];
+      directionDetails.durationText = res["routes"][0]["legs"][0]["duration"]["text"];
+      directionDetails.durationValue = res["routes"][0]["legs"][0]["duration"]["value"];
+
+
+     return directionDetails;
+
+
+  }
+
+
+    }

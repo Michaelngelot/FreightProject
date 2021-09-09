@@ -6,7 +6,7 @@ class AppData extends ChangeNotifier
 {
 //Handle data across the whole app
 //Create instance of address
- Address ? pickUpLocation;
+ Address ? pickUpLocation, dropOffLocation;
 
 void updatePickUpLocationAddress(Address pickUpAddress)
 {
@@ -15,4 +15,12 @@ void updatePickUpLocationAddress(Address pickUpAddress)
   notifyListeners();  //handle any change relative to pickUp location
 
 }
+
+ void updateDropOffLocationAddress(Address dropOffAddress)
+ {
+
+   dropOffLocation = dropOffAddress;
+   notifyListeners();  //handle any change relative to pickUp location
+
+ }
 }

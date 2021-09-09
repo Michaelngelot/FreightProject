@@ -6,7 +6,7 @@ class Address
   double latitude;
   double longitude;
 
-  Address({
+  Address ({
     required this.placeFormattedAddress,
     required this.placeName,
     required this.placeID,
