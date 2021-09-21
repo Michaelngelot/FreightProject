@@ -3,8 +3,6 @@ import 'package:final_project/Assistants/requestAssistant.dart';
 import 'package:final_project/DataHandler/appData.dart';
 import 'package:final_project/Models/address.dart';
 import 'package:final_project/Models/directionDetails.dart';
-import 'package:flutter/cupertino.dart';
-
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -20,9 +18,7 @@ class AssistantMethods {
 
     String placeAddress = "";
     //String st1,st2,st3,st4;
-
     String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$mapKey";
-
     //Calling from request Assistant class
     var res = await RequestAssistant.getRequest(Uri.encodeFull(url));
 
@@ -65,19 +61,44 @@ class AssistantMethods {
       }
      // return placeAddress;
 
-     DirectionDetails directionDetails = DirectionDetails(distanceValue: 0, durationValue: 0, distanceText: '', durationText: '', encodedPoints: 'code');
 
-      directionDetails.encodedPoints = res["routes"][0]["overview_polyline"]["points"];
-      directionDetails.distanceText = res["routes"][0]["legs"][0]["distance"]["text"];
-      directionDetails.distanceValue =res["routes"][0]["legs"][0]["distance"]["value"];
-      directionDetails.durationText = res["routes"][0]["legs"][0]["duration"]["text"];
-      directionDetails.durationValue = res["routes"][0]["legs"][0]["duration"]["value"];
+        DirectionDetails directionDetails = DirectionDetails(distanceValue: 0,
+            durationValue: 0,
+            distanceText: '',
+            durationText: '',
+            encodedPoints: '');
+
+        directionDetails.encodedPoints =
+        res["routes"][0]["overview_polyline"]["points"];
+        directionDetails.distanceText =
+        res["routes"][0]["legs"][0]["distance"]["text"];
+        directionDetails.distanceValue =
+        res["routes"][0]["legs"][0]["distance"]["value"];
+        directionDetails.durationText =
+        res["routes"][0]["legs"][0]["duration"]["text"];
+        directionDetails.durationValue =
+        res["routes"][0]["legs"][0]["duration"]["value"];
 
 
-     return directionDetails;
+        return directionDetails;
+      }
 
+      //calculation price fare
+      static int calculateFare(DirectionDetails directionDetails)
+      {
+        //in terms USD
+        double timeTravelFare = (directionDetails.durationValue /60) * 0.20;
+        double distanceTravelFare = (directionDetails.durationValue /1000) * 0.20;
+        double totalFareAmount = timeTravelFare + distanceTravelFare;
+
+        //local currency
+        //1$ - 160 RS
+        //double totalLocalAmount = totalFareAmount * 160;
+
+        return totalFareAmount.truncate();
+      }
 
   }
 
 
-    }
+

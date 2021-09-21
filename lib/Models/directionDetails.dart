@@ -4,8 +4,7 @@ class DirectionDetails
   int durationValue;
   String distanceText;
   String durationText;
-  String
-  encodedPoints;
+  String encodedPoints;
 
  DirectionDetails({
    required this.distanceValue,

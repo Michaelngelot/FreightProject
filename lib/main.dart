@@ -1,3 +1,4 @@
+import 'package:final_project/AllScreens/MapView.dart';
 import 'package:final_project/AllScreens/SignupScreen.dart';
 import 'package:final_project/AllScreens/loginScreen.dart';
 import 'package:final_project/AllScreens/mainscreen.dart';
@@ -26,8 +27,7 @@ class MyApp extends StatelessWidget {
       create: (context) => AppData(),
 
       child: MaterialApp(
-
-        title: 'ECargo',
+       title: 'ECargo',
         theme: ThemeData(
         fontFamily: "Arial",
           primarySwatch: Colors.blue,
@@ -37,8 +37,9 @@ class MyApp extends StatelessWidget {
         initialRoute: loginScreen.idScreen,
         routes: {
          SignupScreen.idScreen: (context) => SignupScreen(),
-        loginScreen.idScreen: (context) => loginScreen(),
-          MainScreen.idScreen: (context) =>MainScreen(),
+        loginScreen.idScreen: (context) =>  loginScreen(),
+          MainScreen.idScreen: (context) => MainScreen(),
+         // MapView.idScreen: (context) => MapView(),
 
         },
         debugShowCheckedModeBanner: false,

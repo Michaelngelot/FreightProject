@@ -1,3 +1,4 @@
+import 'package:final_project/AllScreens/MapView.dart';
 import 'package:final_project/AllScreens/SignupScreen.dart';
 import 'package:final_project/AllWidgets/progressDialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';

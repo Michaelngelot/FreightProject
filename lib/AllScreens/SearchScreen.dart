@@ -191,7 +191,7 @@ if(placeName.length > 1)
   //setting google autocomplete api url
   //Search can be made country specific or International
   //$component=country:GH makes place search specific to ghana
- String autoCompleteUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&key=$mapKey&sessiontoken=1234567890&components";
+ String autoCompleteUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&key=$mapKey&sessiontoken=1234567890";
 
  var res = await RequestAssistant.getRequest(autoCompleteUrl);
  if (res == "failed"){
