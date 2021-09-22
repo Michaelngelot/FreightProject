@@ -2,11 +2,16 @@ import 'dart:async';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:final_project/AllScreens/SearchScreen.dart';
+import 'package:final_project/AllScreens/loginScreen.dart';
 import 'package:final_project/AllWidgets/Divider.dart';
 import 'package:final_project/AllWidgets/progressDialog.dart';
 import 'package:final_project/Assistants/AssistantMethods.dart';
 import 'package:final_project/DataHandler/appData.dart';
 import 'package:final_project/Models/directionDetails.dart';
+import 'package:final_project/configMaps.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -50,10 +55,10 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
   double searchContainerHeight=300.0;
   double requestRideContainerHeight = 0;
 
-
-
   //Button drawer variable
   bool drawerOpen = true;
+
+  late DatabaseReference riderRequestRef;
 
 //Reset App
   restApp(){
@@ -63,7 +68,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
        searchContainerHeight = 300;
        rideDetailsContainerHeight = 0;
        bottomPaddingOfMap = 230.0;
-
+       requestRideContainerHeight=0;
        polyLineSet.clear();
        markerSet.clear();
        circlesSet.clear();
@@ -73,6 +78,63 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
      locatePosition();
   }
 
+
+  //Retrieve and store current user data
+  @override
+  void initState(){
+    super.initState();
+
+    AssistantMethods.getCurrentOnlineUser();
+  }
+
+  //Store to storeRide information
+    void savedRequestRide(){
+      riderRequestRef = FirebaseDatabase.instance.reference().child("Ride Request").push();
+      var pickUp = Provider.of<AppData>(context, listen:false).pickUpLocation;
+      var dropOff = Provider.of<AppData>(context, listen:false).dropOffLocation;
+
+
+      Map pickUpLocMap =
+      {
+        "latitude" : pickUp!.latitude.toString(),
+        "longitude" : dropOff!.latitude.toString(),
+
+
+      };
+
+      Map dropOffLocMap =
+      {
+        "latitude" : pickUp.latitude.toString(),
+        "longitude" : dropOff.latitude.toString(),
+
+
+      };
+
+      //Information which will be stored into database
+      Map rideInfoMap =
+      {
+        "driver_id" : "waiting",
+        "payment_method": "cash",
+        "pickUp" : pickUpLocMap,
+        "dropOff": dropOffLocMap,
+        "created_at": DateTime.now().toString(),
+        "rider_name" : userCurrentInfo!.name,
+        "rider_phone": userCurrentInfo!.phone,
+        "pickUp_address": pickUp.placeName,
+        "dropOff_address" : dropOff.placeName,
+      };
+
+      //Push info/store info into database
+      riderRequestRef.set(rideInfoMap);
+    }
+
+
+//Cancel ride request
+  void cancelRideRequest ()
+  {
+riderRequestRef.remove();
+  }
+
   displayRequestContainer(){
     setState(() {
       requestRideContainerHeight = 250.0;
@@ -80,6 +142,9 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin{
       bottomPaddingOfMap = 230.0;
       drawerOpen=true;
     });
+
+    //Calling ride request method
+    savedRequestRide();
   }
 
 
@@ -158,9 +223,6 @@ drawerOpen=false;
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldkey,
-      appBar: AppBar(
-        title: Text("ECargo"),
-      ),
 
       //Side Drawer
       drawer: Container(
@@ -207,6 +269,17 @@ drawerOpen=false;
                 leading: Icon(Icons.info),
                 title: Text("About", style: TextStyle(fontSize: 15.0),),
               ),
+               GestureDetector(
+                 onTap: (){
+                   FirebaseAuth.instance.signOut();
+                   Navigator.pushNamedAndRemoveUntil(context, loginScreen.idScreen, (route) => false);
+                   },
+                 child: ListTile(
+                  leading: Icon(Icons.info),
+                  title: Text("Sign Out", style: TextStyle(fontSize: 15.0),),
+              ),
+               ),
+
 
             ],
           ),
@@ -273,9 +346,10 @@ drawerOpen=false;
                     ),
                   ],
                 ),
+                //round drawer
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: Icon((drawerOpen) ? Icons.menu : Icons.close, color: Colors.black ,),
+                  child: Icon((drawerOpen) ? Icons.menu : Icons.close, color: Colors.black , ),
 
                 ),
               ),
@@ -586,15 +660,23 @@ drawerOpen=false;
                     SizedBox(height: 22.0),
 
                     //cancel button
-                    Container(
-                      height: 60.0,
-                      width: 60.0,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(26.0),
-                        border: Border.all(width: 2.0, color: Colors.grey),
+                    GestureDetector(
+                      onTap: ()
+                      {
+                        cancelRideRequest();
+                        restApp();
+                      },
+
+                      child: Container(
+                        height: 60.0,
+                        width: 60.0,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(26.0),
+                          border: Border.all(width: 2.0, color: Colors.grey),
+                        ),
+                        child: Icon(Icons.close, size: 26.0),
                       ),
-                      child: Icon(Icons.close, size: 26.0),
                     ),
 
                     SizedBox(height: 10.0),

@@ -2,7 +2,10 @@
 import 'package:final_project/Assistants/requestAssistant.dart';
 import 'package:final_project/DataHandler/appData.dart';
 import 'package:final_project/Models/address.dart';
+import 'package:final_project/Models/allUsers.dart';
 import 'package:final_project/Models/directionDetails.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -91,12 +94,26 @@ class AssistantMethods {
         double distanceTravelFare = (directionDetails.durationValue /1000) * 0.20;
         double totalFareAmount = timeTravelFare + distanceTravelFare;
 
-        //local currency
-        //1$ - 160 RS
+        //local
+       // Users users     //1$ - 160 RS
         //double totalLocalAmount = totalFareAmount * 160;
 
         return totalFareAmount.truncate();
       }
+       static void getCurrentOnlineUser() async {
+
+        firebaseUser = FirebaseAuth.instance.currentUser;
+
+        String userId = firebaseUser!.uid;
+        DatabaseReference reference = FirebaseDatabase.instance.reference().child("Users").child(userId);
+
+        reference.once().then((DataSnapshot dataSnapShot)
+         {
+            if(dataSnapShot.value !=null){
+              userCurrentInfo = Users.fromSnaShot(dataSnapShot);
+            }
+         });
+       }
 
   }
 
