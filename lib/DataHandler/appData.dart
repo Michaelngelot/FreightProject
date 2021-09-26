@@ -1,26 +1,51 @@
-import 'package:final_project/Models/address.dart';
 import 'package:flutter/cupertino.dart';
-
+import 'package:final_project/Models/address.dart';
+import 'package:final_project/Models/history.dart';
 
 class AppData extends ChangeNotifier
 {
-//Handle data across the whole app
-//Create instance of address
- Address ? pickUpLocation, dropOffLocation;
+   Address ? pickUpLocation, dropOffLocation;
 
-void updatePickUpLocationAddress(Address pickUpAddress)
-{
+  String earnings = "0";
+  int countTrips = 0;
+  List<String> tripHistoryKeys = [];
+  List<History> tripHistoryDataList = [];
 
-  pickUpLocation = pickUpAddress;
-  notifyListeners();  //handle any change relative to pickUp location
 
-}
+  void updatePickUpLocationAddress(Address pickUpAddress)
+  {
+    pickUpLocation = pickUpAddress;
+    notifyListeners();
+  }
 
- void updateDropOffLocationAddress(Address dropOffAddress)
- {
+  void updateDropOffLocationAddress(Address dropOffAddress)
+  {
+    dropOffLocation = dropOffAddress;
+    notifyListeners();
+  }
 
-   dropOffLocation = dropOffAddress;
-   notifyListeners();  //handle any change relative to pickUp location
+  //history
+  void updateEarnings(String updatedEarnings)
+  {
+    earnings = updatedEarnings;
+    notifyListeners();
+  }
 
- }
+  void updateTripsCounter(int tripCounter)
+  {
+    countTrips = tripCounter;
+    notifyListeners();
+  }
+
+  void updateTripKeys(List<String> newKeys)
+  {
+    tripHistoryKeys = newKeys;
+    notifyListeners();
+  }
+
+  void updateTripHistoryData(History eachHistory)
+  {
+    tripHistoryDataList.add(eachHistory);
+    notifyListeners();
+  }
 }

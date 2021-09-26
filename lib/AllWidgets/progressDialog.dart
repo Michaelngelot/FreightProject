@@ -1,16 +1,16 @@
-import 'package:flutter/cupertino.dart';
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
 
-class ProgressDialog extends StatelessWidget
+
+class ProgressDialog extends StatelessWidget 
 {
- String message;
- ProgressDialog({required this.message});
-
+  String message;
+  ProgressDialog({required this.message});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) 
+  {
     return Dialog(
-      backgroundColor: Colors.white38,
+      backgroundColor: Colors.black54,
       child: Container(
         margin: EdgeInsets.all(15.0),
         width: double.infinity,
@@ -18,22 +18,21 @@ class ProgressDialog extends StatelessWidget
           color: Colors.white,
           borderRadius: BorderRadius.circular(6.0),
         ),
-child: Padding(
-  padding:EdgeInsets.all(15.0),
-  child:   Row(
-    children: [
-      SizedBox(width: 6.0,),
-      CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.black),),
-      SizedBox(width: 26.0,),
-      Text(
-        message,
-        style: TextStyle(color: Colors.black, fontSize: 10.0),
-
-      )
-    ],
-  ),
-),
-      )
+        child: Padding(
+          padding: EdgeInsets.all(15.0),
+          child: Row(
+            children: [
+              SizedBox(width: 6.0,),
+              CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.black),),
+              SizedBox(width: 26.0,),
+              Text(
+                message,
+                style: TextStyle(color: Colors.black, fontSize: 10.0),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -1,121 +1,206 @@
-
-import 'package:final_project/Assistants/requestAssistant.dart';
-import 'package:final_project/DataHandler/appData.dart';
-import 'package:final_project/Models/address.dart';
-import 'package:final_project/Models/allUsers.dart';
-import 'package:final_project/Models/directionDetails.dart';
+import 'dart:convert';
+import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:final_project/AllScreens/registerationScreen.dart';
+import 'package:final_project/Assistants/requestAssistant.dart';
+import 'package:final_project/DataHandler/appData.dart';
+import 'package:final_project/Models/address.dart';
+import 'package:final_project/Models/allUsers.dart';
+import 'package:final_project/Models/directDetails.dart';
+import 'package:final_project/Models/history.dart';
+import 'package:final_project/configMaps.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:final_project/main.dart';
 
-import '../configMaps.dart';
-
-
-class AssistantMethods {
-  //perform geocoding request
-  //if any error come remove BuildContext
-  static Future<String> searchCoordinateAddress(context,Position position) async
+class AssistantMethods
+{
+  static Future<String> searchCoordinateAddress(Position position, context) async
   {
-
     String placeAddress = "";
-    //String st1,st2,st3,st4;
+    String st1, st2, st3, st4;
     String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$mapKey";
-    //Calling from request Assistant class
-    var res = await RequestAssistant.getRequest(Uri.encodeFull(url));
 
-    if(res !="failed")
-      {
-        //From the decoded jSon Data we get the formatted address
+    var response = await RequestAssistant.getRequest(url);
 
-        placeAddress= res["results"][0]["formatted_address"];
-        //Display specific location details from https://developers.google.com/maps/documentation/geocoding/start
-        //st1 =  res["results"][0]["address_components"][3]["long_name"];
-        //st2 =  res["results"][0]["address_components"][4]["long_name"];
-       // st3 =  res["results"][0]["address_components"][5]["long_name"];
-       // st4 =  res["results"][0]["address_components"][6]["long_name"];
-        //placeAddress = st1 + ", " + st2 + ", " + st3 + ", " + st4;
+    if(response != 'failed')
+    {
+      placeAddress = response["results"][0]["formatted_address"];
+     // st1 = response["results"][0]["address_components"][4]["long_name"];
+     // st2 = response["results"][0]["address_components"][7]["long_name"];
+     // st3 = response["results"][0]["address_components"][6]["long_name"];
+     // st4 = response["results"][0]["address_components"][9]["long_name"];
+     // placeAddress = st1 + ", " + st2 + ", " + st3 + ", " + st4;
 
-        //Get user address details from address class
-        Address userPickUpAddress = new Address(placeFormattedAddress: '',placeID: '',placeName: '',latitude: 0,longitude: 0);  //
-        userPickUpAddress.longitude = position.latitude;
-        userPickUpAddress.latitude = position.latitude;
-        userPickUpAddress.placeName= placeAddress;
+      Address userPickUpAddress = new Address(longitude: 0, latitude:0, placeName: '', placeId: '', placeFormattedAddress: '',);
+      userPickUpAddress.longitude = position.longitude;
+      userPickUpAddress.latitude = position.latitude;
+      userPickUpAddress.placeName = placeAddress;
+      
+      Provider.of<AppData>(context, listen: false).updatePickUpLocationAddress(userPickUpAddress);
+    }
 
-        Provider.of<AppData>(context, listen: false ).updatePickUpLocationAddress(userPickUpAddress);
-      }
-  return placeAddress;
+
+    return placeAddress;
   }
 
-  //Get direction details
-
-    static Future<DirectionDetails?>obtainPlaceDirectionDetails (LatLng initialPosition, LatLng finalPosition) async
+  static Future<DirectionDetails?> obtainPlaceDirectionDetails(LatLng initialPosition, LatLng finalPosition) async
   {
-      String directionalUrl = "https://maps.googleapis.com/maps/api/directions/json?origin=${initialPosition.latitude},${initialPosition.longitude}&destination=${finalPosition.latitude},${finalPosition.longitude}&key=$mapKey";
+    String directionUrl = "https://maps.googleapis.com/maps/api/directions/json?origin=${initialPosition.latitude},${initialPosition.longitude}&destination=${finalPosition.latitude},${finalPosition.longitude}&key=$mapKey";
 
-    //String directionalUrl= "https://maps.googleapis.com/maps/api/directions/json?origin=49.794150%2C-84.564514&destination=49.173205%2C-84.756775&key=AIzaSyCz5b_Z9M9Mhf-GwCN3M783WFl9xMGR9kw";
-      //Calling from request Assistant class
-      var res = await RequestAssistant.getRequest(Uri.encodeFull(directionalUrl));
+    var res = await RequestAssistant.getRequest(directionUrl);
 
-      if(res == "failed")
+    if(res == "failed")
+    {
+      return null;
+    }
+
+    DirectionDetails directionDetails = DirectionDetails(distanceValue: 0, durationText: '', encodedPoints: '', durationValue: 0, distanceText: '',);
+
+    directionDetails.encodedPoints = res["routes"][0]["overview_polyline"]["points"];
+
+    directionDetails.distanceText = res["routes"][0]["legs"][0]["distance"]["text"];
+    directionDetails.distanceValue = res["routes"][0]["legs"][0]["distance"]["value"];
+
+    directionDetails.durationText = res["routes"][0]["legs"][0]["duration"]["text"];
+    directionDetails.durationValue = res["routes"][0]["legs"][0]["duration"]["value"];
+
+    return directionDetails;
+  }
+
+  static int calculateFares(DirectionDetails directionDetails)
+  {
+    //in terms USD
+    double timeTraveledFare = (directionDetails.durationValue / 60) * 0.20;
+    double distancTraveledFare = (directionDetails.distanceValue/ 1000) * 0.20;
+    double totalFareAmount = timeTraveledFare + distancTraveledFare;
+
+    //Local Currency
+    //1$ = 160 RS
+    //double totalLocalAmount = totalFareAmount * 160;
+
+    return totalFareAmount.truncate();
+  }
+
+  static void getCurrentOnlineUserInfo() async
+  {
+    firebaseUser = FirebaseAuth.instance.currentUser;
+    String userId = firebaseUser!.uid;
+    DatabaseReference reference = FirebaseDatabase.instance.reference().child("users").child(userId);
+
+    reference.once().then((DataSnapshot dataSnapShot)
+    {
+      if(dataSnapShot.value != null)
       {
-        return null;
+        userCurrentInfo = Users.fromSnapshot(dataSnapShot);
       }
-     // return placeAddress;
+    });
+  }
 
+  static double createRandomNumber(int num)
+  {
+    var random = Random();
+    int radNumber = random.nextInt(num);
+    return radNumber.toDouble();
+  }
 
-        DirectionDetails directionDetails = DirectionDetails(distanceValue: 0,
-            durationValue: 0,
-            distanceText: '',
-            durationText: '',
-            encodedPoints: '');
+  static sendNotificationToDriver(String token, context, String ride_request_id) async
+  {
+    var destionation = Provider.of<AppData>(context, listen: false).dropOffLocation;
+    Map<String, String> headerMap =
+    {
+      'Content-Type': 'application/json',
+      'Authorization': serverToken,
+    };
 
-        directionDetails.encodedPoints =
-        res["routes"][0]["overview_polyline"]["points"];
-        directionDetails.distanceText =
-        res["routes"][0]["legs"][0]["distance"]["text"];
-        directionDetails.distanceValue =
-        res["routes"][0]["legs"][0]["distance"]["value"];
-        directionDetails.durationText =
-        res["routes"][0]["legs"][0]["duration"]["text"];
-        directionDetails.durationValue =
-        res["routes"][0]["legs"][0]["duration"]["value"];
+    Map notificationMap =
+    {
+      'body': 'DropOff Address, ${destionation!.placeName}',
+      'title': 'New Ride Request'
+    };
 
+    Map dataMap =
+    {
+      'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+      'id': '1',
+      'status': 'done',
+      'ride_request_id': ride_request_id,
+    };
 
-        return directionDetails;
-      }
+    Map sendNotificationMap =
+    {
+      "notification": notificationMap,
+      "data": dataMap,
+      "priority": "high",
+      "to": token,
+    };
 
-      //calculation price fare
-      static int calculateFare(DirectionDetails directionDetails)
-      {
-        //in terms USD
-        double timeTravelFare = (directionDetails.durationValue /60) * 0.20;
-        double distanceTravelFare = (directionDetails.durationValue /1000) * 0.20;
-        double totalFareAmount = timeTravelFare + distanceTravelFare;
-
-        //local
-       // Users users     //1$ - 160 RS
-        //double totalLocalAmount = totalFareAmount * 160;
-
-        return totalFareAmount.truncate();
-      }
-       static void getCurrentOnlineUser() async {
-
-        firebaseUser = FirebaseAuth.instance.currentUser;
-
-        String userId = firebaseUser!.uid;
-        DatabaseReference reference = FirebaseDatabase.instance.reference().child("Users").child(userId);
-
-        reference.once().then((DataSnapshot dataSnapShot)
-         {
-            if(dataSnapShot.value !=null){
-              userCurrentInfo = Users.fromSnaShot(dataSnapShot);
-            }
-         });
-       }
-
+    var res = await http.post(Uri.parse
+      ('https://fcm.googleapis.com/fcm/send'),
+        headers: headerMap,
+        body: jsonEncode(sendNotificationMap),
+    );
   }
 
 
+  //history
 
+  static void retrieveHistoryInfo(context)
+  {
+    //retrieve and display Trip History
+    rideRequestRef.orderByChild("rider_name").once().then((DataSnapshot dataSnapshot)
+    {
+      if(dataSnapshot.value != null)
+      {
+        //update total number of trip counts to provider
+        Map<dynamic, dynamic> keys = dataSnapshot.value;
+        int tripCounter = keys.length;
+        Provider.of<AppData>(context, listen: false).updateTripsCounter(tripCounter);
+
+        //update trip keys to provider
+        List<String> tripHistoryKeys = [];
+        keys.forEach((key, value)
+        {
+          tripHistoryKeys.add(key);
+        });
+        Provider.of<AppData>(context, listen: false).updateTripKeys(tripHistoryKeys);
+        obtainTripRequestsHistoryData(context);
+      }
+    });
+  }
+
+  static void obtainTripRequestsHistoryData(context)
+  {
+    var keys = Provider.of<AppData>(context, listen: false).tripHistoryKeys;
+
+    for(String key in keys)
+    {
+      rideRequestRef.child(key).once().then((DataSnapshot snapshot) {
+        if(snapshot.value != null)
+        {
+          rideRequestRef.child(key).child("rider_name").once().then((DataSnapshot snap)
+          {
+            String name = snap.value.toString();
+            if(name == userCurrentInfo!.name)
+            {
+              var history = History.fromSnapshot(snapshot);
+              Provider.of<AppData>(context, listen: false).updateTripHistoryData(history);
+            }
+          });
+        }
+      });
+    }
+  }
+
+  static String formatTripDate(String date)
+  {
+    DateTime dateTime = DateTime.parse(date);
+    String formattedDate = "${DateFormat.MMMd().format(dateTime)}, ${DateFormat.y().format(dateTime)} - ${DateFormat.jm().format(dateTime)}";
+
+    return formattedDate;
+  }
+}
