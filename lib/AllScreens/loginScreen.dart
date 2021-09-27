@@ -34,8 +34,8 @@ class _LoginScreenState extends State<LoginScreen>
             children: [
               SizedBox(height: 35.0,),
               Image(
-                image: AssetImage("images/logo.png"),
-                width: 390.0,
+                image: AssetImage("images/taxi.png"),
+                width: 300.0,
                 height: 250.0,
                 alignment: Alignment.center,
               ),
@@ -180,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen>
     else
     {
       Navigator.pop(context);
-      displayToastMessage("Error Occured, can not be Signed-in.", context);
+      displayToastMessage("Error Occurred, can not be Signed-in.", context);
     }
   }
 }

@@ -19,7 +19,7 @@ class _MyAboutScreenState extends State<AboutScreen> {
             Container(
               height: 220,
               child: Center(
-                child: Image.asset('images/uberx.png'),
+                child: Image.asset('images/truck.png'),
               ),
             ),
             Padding(
@@ -27,15 +27,18 @@ class _MyAboutScreenState extends State<AboutScreen> {
               child: Column(
                 children: <Widget>[
                   Text(
-                    'Uber  Clone',
+                    'BokCap',
                     style: TextStyle(
                         fontSize: 90, fontFamily: 'Signatra'),
                   ),
                   SizedBox(height: 30),
                   Text(
-                      'This app has been developed by Muhammad Ali, '
-                          'Co-founder of Coding Cafe. This app offer cheap rides at cheap rates, '
-                          'and that\'s why 10M+ people already use this app',
+                    'GHANA COMMUNICATION TECHNOLOGY UNIVERSITY, '
+                    ''
+                        'Final year project - 2021, '
+                      'Project By, '
+                          'Roland Dadia - 040917352, '
+                          'Michael Osei Takyi - 040917607',
                     style: TextStyle(fontFamily: "Brand-Bold"),
                     textAlign: TextAlign.center,
                   ),

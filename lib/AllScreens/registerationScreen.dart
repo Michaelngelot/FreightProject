@@ -27,7 +27,7 @@ class RegisterationScreen extends StatelessWidget
             children: [
               SizedBox(height: 20.0,),
               Image(
-                image: AssetImage("images/logo.png"),
+                image: AssetImage("images/fleet-trucks.png"),
                 width: 390.0,
                 height: 250.0,
                 alignment: Alignment.center,

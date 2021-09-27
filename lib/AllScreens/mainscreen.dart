@@ -69,7 +69,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
 
   DatabaseReference ? rideRequestRef;
 
-  BitmapDescriptor ? nearByIcon;
+   BitmapDescriptor ?  nearByIcon;
 
    List<NearbyAvailableDrivers> ? availableDrivers;
 
@@ -660,11 +660,11 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
                       GestureDetector(
                         onTap: ()
                         {
-                          displayToastMessage("searching Bike...", context);
+                          displayToastMessage("searching truck...", context);
 
                           setState(() {
                             state = "requesting";
-                            carRideType = "bike";
+                            carRideType = "truck";
                           });
                           displayRequestRideContainer();
                           availableDrivers = GeoFireAssistant.nearByAvailableDriversList.cast<NearbyAvailableDrivers>();
@@ -676,13 +676,13 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
                             padding: EdgeInsets.symmetric(horizontal: 16.0),
                             child: Row(
                               children: [
-                                Image.asset("images/bike.png", height: 70.0, width: 80.0,),
+                                Image.asset("images/truck.png", height: 70.0, width: 80.0,),
                                 SizedBox(width: 16.0,),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "Bike", style: TextStyle(fontSize: 18.0, fontFamily: "Brand Bold",),
+                                      "Truck", style: TextStyle(fontSize: 18.0, fontFamily: "Brand Bold",),
                                     ),
                                     Text(
                                       ((tripDirectionDetails != null) ? tripDirectionDetails!.distanceText : '') , style: TextStyle(fontSize: 16.0, color: Colors.grey,),
@@ -707,11 +707,11 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
                       GestureDetector(
                         onTap: ()
                         {
-                          displayToastMessage("searching Uber-Go...", context);
+                          displayToastMessage("searching Truck-Go...", context);
 
                           setState(() {
                             state = "requesting";
-                            carRideType = "uber-go";
+                            carRideType = "truck-go";
                           });
                           displayRequestRideContainer();
                           availableDrivers = GeoFireAssistant.nearByAvailableDriversList.cast<NearbyAvailableDrivers>();
@@ -723,13 +723,13 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
                             padding: EdgeInsets.symmetric(horizontal: 16.0),
                             child: Row(
                               children: [
-                                Image.asset("images/ubergo.png", height: 70.0, width: 80.0,),
+                                Image.asset("images/truck.png", height: 70.0, width: 80.0,),
                                 SizedBox(width: 16.0,),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "Uber-Go", style: TextStyle(fontSize: 18.0, fontFamily: "Brand Bold",),
+                                      "Truck-Go", style: TextStyle(fontSize: 18.0, fontFamily: "Brand Bold",),
                                     ),
                                     Text(
                                       ((tripDirectionDetails != null) ? tripDirectionDetails!.distanceText : '') , style: TextStyle(fontSize: 16.0, color: Colors.grey,),
@@ -750,15 +750,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
                       Divider(height: 2.0, thickness: 2.0,),
                       SizedBox(height: 10.0,),
 
-                      //uber-x ride
+                      //truck-x ride
                       GestureDetector(
                         onTap: ()
                         {
-                          displayToastMessage("searching Uber-X...", context);
+                          displayToastMessage("searching Truck-X...", context);
 
                           setState(() {
                             state = "requesting";
-                            carRideType = "uber-x";
+                            carRideType = "truck-x";
                           });
                           displayRequestRideContainer();
                           availableDrivers = GeoFireAssistant.nearByAvailableDriversList.cast<NearbyAvailableDrivers>();
@@ -770,13 +770,13 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
                             padding: EdgeInsets.symmetric(horizontal: 16.0),
                             child: Row(
                               children: [
-                                Image.asset("images/uberx.png", height: 70.0, width: 80.0,),
+                                Image.asset("images/truck.png", height: 70.0, width: 80.0,),
                                 SizedBox(width: 16.0,),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "Uber-X", style: TextStyle(fontSize: 18.0, fontFamily: "Brand Bold",),
+                                      "Truck-X", style: TextStyle(fontSize: 18.0, fontFamily: "Brand Bold",),
                                     ),
                                     Text(
                                       ((tripDirectionDetails != null) ? tripDirectionDetails!.distanceText : '') , style: TextStyle(fontSize: 16.0, color: Colors.grey,),
@@ -962,7 +962,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
                             ),
                             onPressed: () async
                             {
-                             // launch(('tel://${driverphone}'));
+                              //launch(('tel://${driverphone}'));
                             },
                             color: Colors.black87,
                             child: Padding(
@@ -1108,7 +1108,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
   {
     Geofire.initialize("availableDrivers");
     //comment
-    Geofire.queryAtLocation(currentPosition.latitude, currentPosition.longitude, 15)!.listen((map) {
+    //nearby drivers .........15 indicates the distance e.g within 15km
+    Geofire.queryAtLocation(currentPosition.latitude, currentPosition.longitude, 15 )!.listen((map) {
       print(map);
       if (map != null) {
         var callBack = map['callBack'];
@@ -1166,7 +1167,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
         markerId: MarkerId('driver${driver.key}'),
         position: driverAvaiablePosition,
         //icon: nearByIcon,
-        //rotation: AssistantMethods.createRandomNumber(360),
+        rotation: AssistantMethods.createRandomNumber(360),
       );
 
       tMakers.add(marker);
@@ -1181,7 +1182,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
     if(nearByIcon == null)
     {
       ImageConfiguration imageConfiguration = createLocalImageConfiguration(context, size: Size(2, 2));
-      BitmapDescriptor.fromAssetImage(imageConfiguration, "images/car_ios.png")
+      BitmapDescriptor.fromAssetImage(imageConfiguration, "images/truck.png")
           .then((value)
       {
         nearByIcon = value;

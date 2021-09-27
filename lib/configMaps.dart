@@ -18,4 +18,4 @@ double starCounter=0.0;
 String title="";
 String carRideType="";
 
-String serverToken = "key=AAAAgyudES0:APA91bGZjOc3Dje2kxGTfvUicXFA8XaeOGB3WTpcp0DxBEOwondnXAVt-_koh_l_iJGeO6Czt2mEq8x65EvDuJIZ_LCqgY0hkWQ3bqU5mBjspjCMAdz_pQ8QBNyru3AFLuWIgq9op3cs";
+String serverToken = "key=AAAAMdCI6eA:APA91bE4ySQXzU8nvU3Arcfailrk7jrZ7ZbX9Z6Iw2REQagS3XXK9ZEzyMCJPaJ6TZfwqO0ZVB_u-Ktq2STzeUnuilM6XLS0vjr-fNFzIGRFLt3L1NVac0VI3TwY-UvhT_aLjjGFDocY";

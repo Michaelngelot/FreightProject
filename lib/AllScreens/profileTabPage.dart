@@ -83,7 +83,7 @@ class InfoCard extends StatelessWidget
             text,
             style: TextStyle(
               color: Colors.black87,
-              fontSize: 16.0,
+              fontSize : 16.0,
               fontFamily: 'Brand Bold',
             ),
           ),
