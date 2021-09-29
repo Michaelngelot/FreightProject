@@ -1,3 +1,5 @@
+import 'package:final_project/AllScreens/availablebookingsScreen.dart';
+import 'package:final_project/AllScreens/bookingScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -15,10 +17,15 @@ import 'AllScreens/registerationScreen.dart';
 import 'DataHandler/appData.dart';
 
 
+
+
+
 void main() async
 {
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
   runApp(MyApp());
 }
 
@@ -44,6 +51,8 @@ class MyApp extends StatelessWidget {
           RegisterationScreen.idScreen: (context) => RegisterationScreen(),
           LoginScreen.idScreen: (context) => LoginScreen(),
           MainScreen.idScreen: (context) => MainScreen(),
+          BookingScreen.idScreen: (context) => BookingScreen(),
+          AvailableBookingScreen.idScreen: (context) => AvailableBookingScreen(),
         },
         debugShowCheckedModeBanner: false,
       ),

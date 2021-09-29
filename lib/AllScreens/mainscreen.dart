@@ -27,6 +27,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../main.dart';
+import 'availablebookingsScreen.dart';
+import 'bookingScreen.dart';
 
 
 
@@ -666,6 +668,9 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
                             state = "requesting";
                             carRideType = "truck";
                           });
+
+                          Navigator.push(
+                              context, MaterialPageRoute(builder: (context)=>BookingScreen()));
                           displayRequestRideContainer();
                           availableDrivers = GeoFireAssistant.nearByAvailableDriversList.cast<NearbyAvailableDrivers>();
                           searchNearestDriver();

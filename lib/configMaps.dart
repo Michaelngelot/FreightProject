@@ -7,7 +7,7 @@ User ? firebaseUser;
 
 Users ? userCurrentInfo;
 
-int driverRequestTimeOut = 40;
+int driverRequestTimeOut = 60;
 String statusRide = "";
 String rideStatus = "Driver is Coming";
 String carDetailsDriver = "";

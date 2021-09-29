@@ -16,8 +16,6 @@ class LoginScreen extends StatefulWidget
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-
-
 class _LoginScreenState extends State<LoginScreen>
 {
   TextEditingController emailTextEditingController = TextEditingController();
